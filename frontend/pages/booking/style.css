@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: #0f172a;
+    background-image: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    padding: 100px 20px 20px; 
+}
+/* Десктопна сітка: 2 колонки */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 1000px; /* Широка панель для десктопу */
+}
+
+.nav-actions button {
+    width: auto;
+    padding: 10px 20px;
+}
+
+.layout-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+}
+/* Ліва колонка */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    padding-right: 30px;
+}
+
+.movie-info h1 { font-size: 24px; color: #f8fafc; margin-bottom: 8px; }
+.selected-date { color: #38bdf8; font-weight: 600; font-size: 16px; }
+
+.time-selector select {
+    width: 100%;
+    background-color: #1e293b;
+    color: #38bdf8;
+    border: 2px solid #334155;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px;
+    margin-top: 8px;
+    outline: none;
+    cursor: pointer;
+}
+
+.showcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Легенда у 2 колонки */
+    gap: 15px;
+    list-style: none;
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 12px;
+}
+.showcase li { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.showcase .seat { transform: none !important; cursor: default; }
+
+.checkout-panel {
+    margin-top: auto;
+    padding-top: 20px;
+}
+.text { font-size: 16px; color: #94a3b8; margin-bottom: 10px; }
+.highlight { color: #38bdf8; font-size: 28px; font-weight: 800; }
+
+.book-btn {
+    width: 100%;
+    padding: 15px;
+    background: #38bdf8;
+    color: #0f172a;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.book-btn:hover:not(:disabled) { background: #0284c7; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+.book-btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+
+/* Права колонка (Зал) */
+.cinema-hall {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+.screen-container { width: 100%; max-width: 450px; margin-bottom: 50px; text-align: center; }
+.screen {
+    background: #e2e8f0;
+    height: 70px;
+    width: 100%;
+    transform: rotateX(-45deg);
+    border-radius: 10px;
+    box-shadow: 0 15px 40px rgba(56, 189, 248, 0.3);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    letter-spacing: 5px;
+}
+
+/* Крісла: ідеальна військова сітка */
+.seats-wrapper { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    align-items: center; 
+    width: 100%;
+    max-width: 760px;
+}
+
+.row { 
+    display: flex; 
+    gap: 12px; /* Збільшив простір між кріслами */
+    justify-content: center; 
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+/* Проходи по центру */
+/* Проходи по центру */
+
+/* Звичайний ряд: розсуваємо після 4-го крісла (АЛЕ тільки якщо воно не VIP) */
+.row .seat:not(.vip):nth-child(4) { 
+    margin-right: 40px; 
+}
+
+/* VIP ряд: розсуваємо після 2-го крісла (тільки якщо воно VIP) */
+.row .seat.vip:nth-child(2) { 
+    margin-right: 40px; 
+}
+
+/* ПРИБРАНО "магію арки", бо вона кривить великі VIP-крісла */
+
+.seat {
+    background-color: #334155;
+    height: 28px;
+    width: 32px;
+    border-radius: 6px 6px 4px 4px;
+    border: none;
+    appearance: none;
+    transition: 0.2s;
+    position: relative;
+    flex-shrink: 0; /* ЗАБОРОНЯЄМО кріслам стискатися */
+}
+.seat::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; left: 10%; width: 80%; height: 4px;
+    background: rgba(0,0,0,0.2); border-radius: 2px;
+}
+
+.seat.vip { background-color: #8b5cf6; width: 45px; }
+.seat.selected { background-color: #38bdf8; box-shadow: 0 0 15px #38bdf8; transform: scale(1.1) !important; }
+.seat.occupied { background-color: #ef4444; opacity: 0.5; }
+
+.seat:not(.occupied):hover { cursor: pointer; background-color: #7dd3fc; transform: scale(1.1) !important; }
+.seat.vip:not(.occupied):hover { background-color: #a78bfa; box-shadow: 0 0 15px #a78bfa; }
+/* Мобільна адаптивність */
+@media (max-width: 800px) {
+    .layout-grid { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 20px; }
+    .seat { width: 24px; height: 22px; }
+    .seat.vip { width: 34px; }
+    .row:not(.vip-row) .seat:nth-child(4) { margin-right: 15px; }
+    .row.vip-row .seat:nth-child(3) { margin-right: 15px; }
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Головна | Cinema Booking</title>
+    <link rel="stylesheet" href="/assets/css/global.css" />
+    <link rel="stylesheet" href="/pages/home/style.css" />
+    <script src="/pages/home/script.js" defer></script>
+</head>
+<body>
+    <header class="navbar glass-panel">
+        <div class="logo" style="cursor:pointer;" onclick="window.location.href='../home/index.html'">🍿 CinemaX</div>
+        <div class="nav-actions">
+            <button id="auth-btn" class="btn-primary" onclick="window.location.href='../login/index.html'">Увійти</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section class="hot-section">
+            <h2 class="section-title">🔥 Гарячі квитки (Закінчуються місця)</h2>
+            <div class="movie-grid" id="hot-movies-grid">
+                </div>
+        </section>
+
+        <section class="top-section">
+            <h2 class="section-title">🏆 ТОП прокату (За тиждень)</h2>
+            <div class="movie-grid" id="top-movies-grid">
+                </div>
+        </section>
+
+        <section class="premieres-section">
+            <h2 class="section-title">✨ Останні прем'єри</h2>
+            <div class="movie-grid" id="premieres-movies-grid">
+                </div>
+        </section>
+
+        <section class="catalog-section">
+            <h2 class="section-title">🎬 Усі фільми у прокаті</h2>
+            <div class="movie-grid" id="all-movies-grid">
+                </div>
+        </section>
+
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    
+</body>
+</html>

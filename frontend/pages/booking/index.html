@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Вибір місць | Cinema Booking</title>
+    <link rel="stylesheet" href="/assets/css/global.css" />
+    <link rel="stylesheet" href="/pages/booking/style.css">
+    
+<script src="/pages/booking/script.js" defer></script>
+</head>
+<body>
+<header class="navbar">
+    <div class="logo" style="cursor:pointer;" onclick="window.location.href='../home/index.html'">🍿 CinemaX</div>
+    <div class="nav-actions">
+        <button id="auth-btn" class="btn-primary" onclick="window.location.href='../login/index.html'">Увійти</button>
+    </div>
+</header>
+
+    <div class="glass-panel layout-grid">
+        
+        <aside class="sidebar">
+            <div class="movie-info">
+                <h1 id="movie-title">Завантаження...</h1>
+                <p class="selected-date" id="selected-date"></p>
+            </div>
+
+            <div class="time-selector">
+                <label>Оберіть час сеансу:</label>
+                <select id="session-time">
+                </select>
+            </div>
+
+            <ul class="showcase">
+                <li><div class="seat"></div><small>Вільно</small></li>
+                <li><div class="seat vip"></div><small>VIP (+100 грн)</small></li>
+                <li><div class="seat selected"></div><small>Обрано</small></li>
+                <li><div class="seat occupied"></div><small>Зайнято</small></li>
+            </ul>
+
+            <div class="checkout-panel">
+                <p class="text">Обрано квитків: <span id="count">0</span></p>
+                <p class="text">До сплати: <span id="total" class="highlight">0</span> грн</p>
+<button id="book-btn" class="book-btn" disabled>Перейти до оплати</button>
+                
+                <div id="liqpay-container" style="display: none; margin-top: 15px;"></div>
+            </div>
+        </aside>
+
+        <main class="cinema-hall">
+            <div class="screen-container">
+                <div class="screen-glow"></div>
+                <div class="screen">ЕКРАН</div>
+            </div>
+            
+            <div class="seats-wrapper" id="seats-container"></div>
+        </main>
+
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
+
+</body>
+</html>

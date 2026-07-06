@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Мій профіль | Cinema Booking</title>
+    <link rel="stylesheet" href="/assets/css/global.css" />
+    <link rel="stylesheet" href="/pages/profile/style.css">
+</head>
+<body>
+    <header class="navbar glass-panel">
+        <div class="logo" onclick="window.location.href='../home/index.html'" style="cursor:pointer;">🍿 CinemaX</div>
+        <div class="nav-actions">
+            <button id="logout-btn" class="btn-primary" style="background: var(--danger);">Вийти</button>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        <aside class="settings-panel glass-panel">
+            <h2>Налаштування</h2>
+            <div class="profile-summary">
+                <p id="profile-username"></p>
+                <p id="profile-email"></p>
+            </div>
+            <div class="input-group">
+                <label>Змінити пароль</label>
+                <input type="password" id="new-password" placeholder="Новий пароль">
+            </div>
+            <button class="btn-primary" onclick="updatePassword()">Зберегти</button>
+        </aside>
+
+        <section class="tickets-panel glass-panel">
+            <h2>🎟 Мої квитки</h2>
+            <div id="my-tickets-list">
+                <div class="ticket-card">
+                    <div class="ticket-info">
+                        <h3>Тут з'являться ваші квитки</h3>
+                        <p>Після створення замовлення квитки будуть показані тут.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="/pages/profile/script.js" defer></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
+
+</body>
+</html>

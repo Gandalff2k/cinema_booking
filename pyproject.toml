@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "cinema-booking-api"
+version = "0.1.0"
+description = "FastAPI Movie Seat Booking Service"
+authors = ["Danylo Korol"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.100.0"
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
+sqlalchemy = "^2.0.0"
+asyncpg = "^0.28.0"
+alembic = "^1.11.0"
+pydantic = {extras = ["email"], version = "^2.0"}
+pydantic-settings = "^2.0"
+celery = "^5.3.0"
+redis = "^5.0.0"
+passlib = "^1.7.4"
+bcrypt = "<4.0.0"
+ujson = "^5.7.0"
+PyJWT = "^2.6.0"
+stripe = "^15.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+httpx = "^0.24.0"
+pytest-asyncio = "^0.20.3"
+faker = "^17.0.0"
+ruff = "^0.15.20"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "B008"]  

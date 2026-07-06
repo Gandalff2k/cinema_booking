@@ -1,0 +1,69 @@
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Хедер (дублюємо для всіх сторінок) */
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; margin: 20px; border-radius: 16px; }
+.logo { font-size: 24px; font-weight: 800; color: var(--accent); }
+.nav-actions button { width: auto; padding: 10px 20px; }
+
+.movie-hero {
+    display: flex;
+    gap: 40px;
+    padding: 40px;
+    margin-top: 30px;
+}
+
+.hero-poster {
+    width: 300px;
+    border-radius: 16px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+}
+
+.hero-info h1 { font-size: 42px; margin-bottom: 10px; }
+.tags { color: var(--accent); font-weight: 600; margin-bottom: 20px; font-size: 16px; }
+.description { font-size: 18px; line-height: 1.6; color: var(--text-muted); margin-bottom: 30px; }
+.director, .cast { font-size: 16px; margin-bottom: 10px; color: #cbd5e1; }
+
+.dates-section {
+    margin-top: 50px;
+}
+
+.dates-section h2 { margin-bottom: 20px; font-size: 24px; }
+
+.dates-flex {
+    display: flex;
+    gap: 15px;
+}
+
+.date-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    padding: 15px 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text-main);
+    transition: 0.3s;
+}
+
+.date-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+.date-btn.active { background: var(--accent); color: var(--bg-main); border-color: var(--accent); }
+.date-btn .day { font-size: 14px; margin-bottom: 5px; opacity: 0.8; }
+.date-btn .date { font-size: 18px; font-weight: bold; }
+
+@media (max-width: 800px) {
+    .movie-hero {
+        flex-direction: column;
+        padding: 24px;
+    }
+
+    .hero-poster {
+        width: 100%;
+        max-width: 360px;
+    }
+
+    .dates-flex {
+        flex-wrap: wrap;
+    }
+}
