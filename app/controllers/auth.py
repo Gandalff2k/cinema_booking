@@ -20,13 +20,11 @@ class AuthController(BaseController[User]):
 
     @Transactional(propagation=Propagation.REQUIRED)
     async def register(self, email: EmailStr, password: str, username: str) -> User:
-        # Check if user exists with email
         user = await self.user_repository.get_by_email(email)
 
         if user:
             raise BadRequestException("User already exists with this email")
 
-        # Check if user exists with username
         user = await self.user_repository.get_by_username(username)
 
         if user:
