@@ -7,7 +7,7 @@ import jwt
 from core.config import config
 from core.exceptions import CustomException
 
-ACCESS_TOKEN_TTL = timedelta(minutes=15)
+ACCESS_TOKEN_TTL = timedelta(minutes=config.JWT_EXPIRE_MINUTES)
 REFRESH_TOKEN_TTL = timedelta(days=30)
 
 

@@ -18,13 +18,13 @@ class RedisBackend(BaseBackend):
 
         try:
             return ujson.loads(result.decode("utf8"))
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, ValueError):
             return pickle.loads(result)
 
     async def set(self, response: Any, key: str, ttl: int = 60) -> None:
         if isinstance(response, dict):
             response = ujson.dumps(response)
-        elif isinstance(response, object):
+        else:
             response = pickle.dumps(response)
 
         await redis.set(name=key, value=response, ex=ttl)

@@ -44,7 +44,7 @@
 .header-text h2 { margin-bottom: 5px; }
 .header-text p { color: var(--text-muted); font-size: 14px; }
 
-/* Логіка перемикання форм: ховаємо ту, яка не активна */
+/* Form switching logic: hide whichever one is not active */
 .auth-form {
     display: none;
     animation: fadeIn 0.4s ease;

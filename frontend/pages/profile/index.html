@@ -1,48 +1,50 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Мій профіль | Cinema Booking</title>
-    <link rel="stylesheet" href="/assets/css/global.css" />
-    <link rel="stylesheet" href="/pages/profile/style.css">
+    <title>My profile | CinemaX</title>
+    <link rel="stylesheet" href="/assets/css/global.css?v=3" />
+    <link rel="stylesheet" href="/pages/profile/style.css?v=3">
 </head>
 <body>
     <header class="navbar glass-panel">
-        <div class="logo" onclick="window.location.href='../home/index.html'" style="cursor:pointer;">🍿 CinemaX</div>
+        <div class="logo" onclick="window.location.href='../home/index.html'" style="cursor:pointer;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M3 7.5h4M17 7.5h4M3 12h18M3 16.5h4M17 16.5h4M17 3v18"/></svg> CinemaX</div>
         <div class="nav-actions">
-            <button id="logout-btn" class="btn-primary" style="background: var(--danger);">Вийти</button>
+            <button id="logout-btn" class="btn-primary" style="background: var(--danger);">Log out</button>
         </div>
     </header>
 
     <main class="profile-container">
         <aside class="settings-panel glass-panel">
-            <h2>Налаштування</h2>
+            <h2>Settings</h2>
             <div class="profile-summary">
                 <p id="profile-username"></p>
                 <p id="profile-email"></p>
             </div>
             <div class="input-group">
-                <label>Змінити пароль</label>
-                <input type="password" id="new-password" placeholder="Новий пароль">
+                <label>Change password</label>
+                <input type="password" id="old-password" placeholder="Current password">
+                <input type="password" id="new-password" placeholder="New password (min. 8)"
+                       style="margin-top:8px;">
             </div>
-            <button class="btn-primary" onclick="updatePassword()">Зберегти</button>
+            <button class="btn-primary" onclick="updatePassword()">Save</button>
         </aside>
 
         <section class="tickets-panel glass-panel">
-            <h2>🎟 Мої квитки</h2>
+            <h2><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg> My tickets</h2>
             <div id="my-tickets-list">
                 <div class="ticket-card">
                     <div class="ticket-info">
-                        <h3>Тут з'являться ваші квитки</h3>
-                        <p>Після створення замовлення квитки будуть показані тут.</p>
+                        <h3>Your tickets will appear here</h3>
+                        <p>They'll show up here after you place an order.</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
-    <script src="/pages/profile/script.js" defer></script>
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/auth.js"></script>
+    <script src="/pages/profile/script.js?v=3" defer></script>
+    <script src="/assets/js/api.js?v=3"></script>
+    <script src="/assets/js/auth.js?v=3"></script>
 
 </body>
 </html>

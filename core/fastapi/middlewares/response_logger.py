@@ -1,17 +1,34 @@
-from typing import Optional
+import json
+import logging
+import time
 
-from pydantic import BaseModel, Field
-from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
+from core.config import config
 
-class ResponseInfo(BaseModel):
-    headers: Optional[Headers] = Field(default=None, title="Response header")
-    body: str = Field(default="", title="응답 바디")
-    status_code: Optional[int] = Field(default=None, title="Status code")
+logger = logging.getLogger("app.request")
 
-    class Config:
-        arbitrary_types_allowed = True
+_LOG_BODIES = config.DEBUG and config.LOG_REQUEST_BODY
+_MAX_BODY_CHARS = 2000
+_BODY_METHODS = {"POST", "PUT", "PATCH"}
+
+
+def _redact_body(raw: bytes) -> str:
+    text = raw.decode("utf-8", errors="replace")
+    try:
+        data = json.loads(text)
+    except (ValueError, TypeError):
+        data = None
+
+    if isinstance(data, dict):
+        for key in list(data):
+            if any(s in key.lower() for s in ("password", "token", "secret")):
+                data[key] = "***"
+        text = json.dumps(data, ensure_ascii=False)
+
+    if len(text) > _MAX_BODY_CHARS:
+        text = f"{text[:_MAX_BODY_CHARS]}...(truncated)"
+    return text
 
 
 class ResponseLoggerMiddleware:
@@ -22,16 +39,63 @@ class ResponseLoggerMiddleware:
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
 
-        response_info = ResponseInfo()
+        if _LOG_BODIES and scope.get("method") in _BODY_METHODS:
+            receive = await self._log_request_body(scope, receive)
 
-        async def _logging_send(message: Message) -> None:
-            if message.get("type") == "http.response.start":
-                response_info.headers = Headers(raw=message.get("headers"))
-                response_info.status_code = message.get("status")
-            elif message.get("type") == "http.response.body":
-                if body := message.get("body"):
-                    response_info.body += body.decode("utf8")
+        start = time.perf_counter()
+        status_code = 500
 
+        async def _send(message: Message) -> None:
+            nonlocal status_code
+            if message["type"] == "http.response.start":
+                status_code = message["status"]
             await send(message)
 
-        await self.app(scope, receive, _logging_send)
+        try:
+            await self.app(scope, receive, _send)
+        finally:
+            duration_ms = (time.perf_counter() - start) * 1000
+            if status_code >= 500:
+                level = logging.ERROR
+            elif status_code >= 400:
+                level = logging.WARNING
+            else:
+                level = logging.INFO
+            logger.log(
+                level,
+                "%s %s -> %s (%.1f ms)",
+                scope.get("method"),
+                scope.get("path"),
+                status_code,
+                duration_ms,
+            )
+
+    @staticmethod
+    async def _log_request_body(scope: Scope, receive: Receive) -> Receive:
+        """Drain the ASGI body, log it, then hand back a replaying receive()."""
+        messages: list[Message] = []
+        body = b""
+        more_body = True
+        while more_body:
+            message = await receive()
+            messages.append(message)
+            if message["type"] == "http.request":
+                body += message.get("body", b"")
+                more_body = message.get("more_body", False)
+            else:
+                more_body = False
+
+        if body:
+            logger.debug(
+                "Body %s %s: %s",
+                scope.get("method"),
+                scope.get("path"),
+                _redact_body(body),
+            )
+
+        async def replay() -> Message:
+            if messages:
+                return messages.pop(0)
+            return await receive()
+
+        return replay

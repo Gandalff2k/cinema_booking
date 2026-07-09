@@ -1,114 +1,174 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --bg-main: #0f172a;
-    --bg-gradient: #1e293b;
-    --text-main: #f8fafc;
+    --bg-main: #0b1120;
+    --bg-elevated: #121a2e;
+    --surface: #172136;
+    --surface-2: #1e293b;
+    --text-main: #f1f5f9;
     --text-muted: #94a3b8;
+    --text-subtle: #64748b;
     --accent: #38bdf8;
-    --accent-hover: #0284c7;
-    --danger: #ef4444;
+    --accent-strong: #0ea5e9;
+    --accent-soft: rgba(56, 189, 248, 0.12);
+    --danger: #f43f5e;
     --success: #10b981;
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.05);
+    --warning: #f59e0b;
+    --border: rgba(148, 163, 184, 0.14);
+    --border-strong: rgba(148, 163, 184, 0.24);
+    --glass-bg: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(148, 163, 184, 0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+    --ring: 0 0 0 3px var(--accent-soft);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { -webkit-text-size-adjust: 100%; }
+
 body {
     background-color: var(--bg-main);
-    background-image: radial-gradient(circle at top, var(--bg-gradient) 0%, var(--bg-main) 100%);
+    background-image:
+        radial-gradient(1200px 600px at 50% -10%, #1b2740 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-main) 0%, #0a0f1d 100%);
+    background-attachment: fixed;
     color: var(--text-main);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 100px 20px 20px;
+    padding: 96px 24px 40px;
 }
 
-/* Глобальний клас для панелей */
+h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.15; font-weight: 800; }
+h1 { font-size: clamp(28px, 4vw, 40px); }
+h2 { font-size: clamp(20px, 2.6vw, 26px); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-strong); }
+
+::selection { background: var(--accent-soft); }
+
+/* Panels / cards */
 .glass-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(180deg, var(--glass-bg), transparent), var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
 }
 
-/* Глобальні інпути */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-}
-
+/* Inputs */
+.input-group { display: flex; flex-direction: column; margin-bottom: 18px; }
 .input-group label {
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--text-muted);
-    margin-bottom: 8px;
+    margin-bottom: 7px;
 }
-
-.input-group input {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
-    border-radius: 10px;
-    padding: 12px 15px;
+.input-group input,
+.input-group select,
+.input-group textarea {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
     color: var(--text-main);
-    font-size: 16px;
+    font-size: 15px;
+    font-family: inherit;
     outline: none;
-    transition: 0.3s;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.input-group input::placeholder { color: var(--text-subtle); }
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    border-color: var(--accent);
+    box-shadow: var(--ring);
 }
 
-.input-group input:focus { border-color: var(--accent); }
-
-/* Глобальні кнопки */
-.btn-primary {
+/* Buttons — solid, minimal, subtle lift (no neon glow) */
+.btn-primary,
+.btn-secondary {
     width: 100%;
-    padding: 14px;
-    background: var(--accent);
-    color: var(--bg-main);
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
+    padding: 12px 18px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
     font-weight: 600;
+    font-family: inherit;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.12s ease, background 0.18s ease, box-shadow 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-primary { background: var(--accent); color: #061018; box-shadow: var(--shadow-sm); }
+.btn-primary:hover { background: var(--accent-strong); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { background: var(--surface-2); color: var(--text-subtle); cursor: not-allowed; transform: none; }
+
+.btn-secondary { background: transparent; color: var(--text-main); border-color: var(--border-strong); }
+.btn-secondary:hover { background: var(--surface-2); border-color: var(--accent); }
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
 }
 
-.btn-primary:hover {
-    background: var(--accent-hover);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-}
+/* Inline SVG icon sizing helper */
+.icon { width: 1.15em; height: 1.15em; stroke-width: 2; vertical-align: -0.16em; flex-shrink: 0; }
 
-/* Глобальний Header */
+/* Navbar */
 .navbar {
     width: 100%;
-    height: 75px;
+    height: 68px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 50px;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid var(--glass-border);
-    position: fixed; 
+    padding: 0 clamp(20px, 5vw, 48px);
+    background: rgba(11, 17, 32, 0.72);
+    backdrop-filter: saturate(140%) blur(16px);
+    border-bottom: 1px solid var(--border);
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
 }
-
 .navbar .logo {
-    font-size: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 20px;
     font-weight: 800;
+    letter-spacing: -0.02em;
     color: var(--text-main);
 }
+.navbar .logo .icon { width: 22px; height: 22px; color: var(--accent); }
+.navbar .nav-actions { display: flex; gap: 10px; }
+.navbar .nav-actions button { width: auto; padding: 9px 18px; }
 
-.navbar .nav-actions button {
-    width: auto;
-    padding: 10px 24px;
+/* Fixed navbar offset */
+body { padding-top: 96px; }
+
+@media (max-width: 640px) {
+    body { padding: 84px 16px 32px; }
+    .navbar { height: 60px; }
+    .navbar .logo { font-size: 18px; }
+    .navbar .nav-actions button { padding: 8px 14px; font-size: 14px; }
 }
 
-/* Оскільки шапка fixed, треба відсунути контент вниз, щоб вона його не перекривала */
-body {
-    padding-top: 100px; 
-}
+h1 .icon, h2 .icon, h3 .icon { color: var(--accent); margin-right: 2px; }

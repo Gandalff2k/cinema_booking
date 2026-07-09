@@ -1,29 +1,31 @@
-// --- ЛОГІКА ПЕРЕМИКАННЯ ТАБІВ ---
+// --- TAB SWITCHING LOGIC ---
 const tabBtns = document.querySelectorAll('.tab-btn');
 const forms = document.querySelectorAll('.auth-form');
 
 tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Забираємо active у всіх
         tabBtns.forEach(b => b.classList.remove('active'));
         forms.forEach(f => f.classList.remove('active'));
-        
-        // Вішаємо active на натиснутий таб і відповідну форму
         btn.classList.add('active');
         document.getElementById(btn.dataset.target).classList.add('active');
     });
 });
 
-// --- ЛОГІКА ВІДПРАВКИ ФОРМ НА FASTAPI ---
+// Open the requested tab, e.g. ?tab=register (used by the booking flow).
+if (new URLSearchParams(window.location.search).get('tab') === 'register') {
+    document.querySelector('.tab-btn[data-target="register-form"]')?.click();
+}
 
-// ЛОГІН
+// --- FORM SUBMISSION LOGIC (FASTAPI) ---
+
+// LOGIN
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const contact = document.getElementById('login-contact').value.trim();
     const password = document.getElementById('login-password').value;
     const errorMsg = document.getElementById('login-error');
     
-    errorMsg.innerText = ''; // Очищаємо старі помилки
+    errorMsg.innerText = ''; // Clear previous errors
 
     try {
         const response = await apiFetch('/auth/login', {
@@ -32,11 +34,23 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         });
 
         setAuthTokens(response);
-        
-        // Перекидаємо на головну
-        alert('Успішний вхід!');
-        window.location.href = '../home/index.html'; 
-        
+        showToast('Signed in!', 'success');
+
+        // Send admins to the dashboard, everyone else to the home page.
+        let destination = '../home/index.html';
+        try {
+            const me = await apiFetch('/auth/me');
+            localStorage.setItem('user_role', me.role);
+            if (me.role === 'admin') {
+                destination = '../admin/index.html';
+            }
+        } catch (meError) {
+            console.error('Could not determine role:', meError);
+        }
+        setTimeout(() => {
+            window.location.href = destination;
+        }, 700);
+
     } catch (err) {
         errorMsg.innerText = err.message;
     }
@@ -51,7 +65,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     const errorMsg = document.getElementById('reg-error');
 
     if (pass !== confirmPass) {
-        return errorMsg.innerText = 'Паролі не співпадають!';
+        return errorMsg.innerText = 'Passwords do not match!';
     }
 
     try {
@@ -60,9 +74,9 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
             body: { email, username, password: pass },
         });
         
-        alert('Реєстрація успішна!');
-        
-        // Магія автозаповнення:
+        showToast('Registration successful! Now sign in.', 'success');
+
+        // Auto-fill magic:
         tabBtns[0].click();
         document.getElementById('login-contact').value = email;
         document.getElementById('login-password').focus();

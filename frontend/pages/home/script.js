@@ -2,7 +2,7 @@ function checkAuth() {
     const authBtn = document.getElementById('auth-btn');
 
     if (getAccessToken() && authBtn) {
-        authBtn.innerText = 'Особистий кабінет';
+        authBtn.innerText = 'My account';
         authBtn.onclick = () => window.location.href = '../profile/index.html';
     }
 }
@@ -12,15 +12,18 @@ function createCard(movie, badgeType = null, badgeText = '') {
     if (badgeType === 'hot') badgeHtml = `<div class="badge-hot">${badgeText}</div>`;
     if (badgeType === 'rank') badgeHtml = `<div class="badge-rank">${badgeText}</div>`;
 
-    const genres = movie.genres?.map((genre) => genre.name).join(' • ') || 'У прокаті';
-    const tags = [genres, `${movie.duration_minutes} хв`, movie.age_rating].filter(Boolean).join(' • ');
+    const genres = movie.genres?.map((genre) => genre.name).join(' • ') || 'Now showing';
+    const tags = [genres, `${movie.duration_minutes} min`, movie.age_rating].filter(Boolean).join(' • ');
+    const title = escapeHtml(movie.title);
+    const poster = escapeHtml(movie.poster_url || '');
 
     return `
     <div class="movie-card" onclick="window.location.href='/pages/movie/index.html?movie_id=${movie.id}'">
         ${badgeHtml}
-        <img src="${movie.poster_url}" alt="${movie.title}" class="movie-poster">
-        <h3 class="movie-title">${movie.title}</h3>
-        <p class="movie-info">${tags}</p>
+        <img src="${poster}" alt="${title}" class="movie-poster"
+             onerror="this.onerror=null;this.src=window.POSTER_PLACEHOLDER">
+        <h3 class="movie-title">${title}</h3>
+        <p class="movie-info">${escapeHtml(tags)}</p>
     </div>`;
 }
 
@@ -35,7 +38,7 @@ async function renderMovies() {
     const topMovies = movies.slice(2, 5);
     const premiereMovies = movies.slice(5, 8);
 
-    hotGrid.innerHTML = hotMovies.map((movie) => createCard(movie, 'hot', 'Останні місця!')).join('');
+    hotGrid.innerHTML = hotMovies.map((movie) => createCard(movie, 'hot', 'Last seats!')).join('');
     topGrid.innerHTML = topMovies.map((movie, index) => createCard(movie, 'rank', `#${index + 1}`)).join('');
     premieresGrid.innerHTML = premiereMovies.map((movie) => createCard(movie)).join('');
     allGrid.innerHTML = movies.map((movie) => createCard(movie)).join('');

@@ -7,11 +7,17 @@ from app.schemas.requests.users import LoginUserRequest, RegisterUserRequest
 from app.schemas.responses.users import TokenResponse, UserResponse
 from core.factory import Factory
 from core.fastapi.dependencies.current_user import get_current_user
+from core.fastapi.dependencies.rate_limiter import RateLimiter
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@auth_router.post("/register", response_model=UserResponse, status_code=201)
+@auth_router.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=201,
+    dependencies=[Depends(RateLimiter())],
+)
 async def register(
     payload: RegisterUserRequest,
     auth_controller: AuthController = Depends(Factory().get_auth_controller),
@@ -23,7 +29,11 @@ async def register(
     )
 
 
-@auth_router.post("/login", response_model=TokenResponse)
+@auth_router.post(
+    "/login",
+    response_model=TokenResponse,
+    dependencies=[Depends(RateLimiter())],
+)
 async def login(
     payload: LoginUserRequest,
     auth_controller: AuthController = Depends(Factory().get_auth_controller),

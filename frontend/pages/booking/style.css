@@ -14,7 +14,7 @@ body {
     font-family: 'Inter', sans-serif;
     padding: 100px 20px 20px; 
 }
-/* Десктопна сітка: 2 колонки */
+/* Desktop grid: 2 columns */
 .glass-panel {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
@@ -23,7 +23,7 @@ body {
     padding: 40px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     width: 100%;
-    max-width: 1000px; /* Широка панель для десктопу */
+    max-width: 1000px; /* Wide panel for desktop */
 }
 
 .nav-actions button {
@@ -36,7 +36,7 @@ body {
     grid-template-columns: 300px 1fr;
     gap: 40px;
 }
-/* Ліва колонка */
+/* Left column */
 .sidebar {
     display: flex;
     flex-direction: column;
@@ -64,7 +64,7 @@ body {
 
 .showcase {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Легенда у 2 колонки */
+    grid-template-columns: 1fr 1fr; /* Legend in 2 columns */
     gap: 15px;
     list-style: none;
     background: rgba(0,0,0,0.2);
@@ -96,7 +96,7 @@ body {
 .book-btn:hover:not(:disabled) { background: #0284c7; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
 .book-btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
 
-/* Права колонка (Зал) */
+/* Right column (hall) */
 .cinema-hall {
     display: flex;
     flex-direction: column;
@@ -121,7 +121,7 @@ body {
     letter-spacing: 5px;
 }
 
-/* Крісла: ідеальна військова сітка */
+/* Seats: perfectly aligned grid */
 .seats-wrapper { 
     display: flex; 
     flex-direction: column; 
@@ -133,37 +133,25 @@ body {
 
 .row { 
     display: flex; 
-    gap: 12px; /* Збільшив простір між кріслами */
+    gap: 12px; /* Increased spacing between seats */
     justify-content: center; 
     align-items: center;
     margin-bottom: 5px;
 }
 
-/* Проходи по центру */
-/* Проходи по центру */
-
-/* Звичайний ряд: розсуваємо після 4-го крісла (АЛЕ тільки якщо воно не VIP) */
-.row .seat:not(.vip):nth-child(4) { 
-    margin-right: 40px; 
-}
-
-/* VIP ряд: розсуваємо після 2-го крісла (тільки якщо воно VIP) */
-.row .seat.vip:nth-child(2) { 
-    margin-right: 40px; 
-}
-
-/* ПРИБРАНО "магію арки", бо вона кривить великі VIP-крісла */
+/* All seats share the same width -> rows align perfectly.
+   VIP is distinguished by color and a gold border, not size. */
 
 .seat {
     background-color: #334155;
-    height: 28px;
-    width: 32px;
+    height: 30px;
+    width: 34px;
     border-radius: 6px 6px 4px 4px;
     border: none;
     appearance: none;
     transition: 0.2s;
     position: relative;
-    flex-shrink: 0; /* ЗАБОРОНЯЄМО кріслам стискатися */
+    flex-shrink: 0; /* PREVENT seats from shrinking */
 }
 .seat::after {
     content: '';
@@ -172,18 +160,20 @@ body {
     background: rgba(0,0,0,0.2); border-radius: 2px;
 }
 
-.seat.vip { background-color: #8b5cf6; width: 45px; }
+.seat.vip {
+    background-color: #8b5cf6;
+    box-shadow: inset 0 0 0 2px #fbbf24; /* gold border = VIP */
+}
 .seat.selected { background-color: #38bdf8; box-shadow: 0 0 15px #38bdf8; transform: scale(1.1) !important; }
 .seat.occupied { background-color: #ef4444; opacity: 0.5; }
 
 .seat:not(.occupied):hover { cursor: pointer; background-color: #7dd3fc; transform: scale(1.1) !important; }
 .seat.vip:not(.occupied):hover { background-color: #a78bfa; box-shadow: 0 0 15px #a78bfa; }
-/* Мобільна адаптивність */
+/* Mobile responsiveness */
 @media (max-width: 800px) {
     .layout-grid { grid-template-columns: 1fr; }
     .sidebar { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 20px; }
-    .seat { width: 24px; height: 22px; }
-    .seat.vip { width: 34px; }
-    .row:not(.vip-row) .seat:nth-child(4) { margin-right: 15px; }
-    .row.vip-row .seat:nth-child(3) { margin-right: 15px; }
+    .seats-wrapper { gap: 8px; }
+    .row { gap: 8px; }
+    .seat { width: 26px; height: 24px; }
 }

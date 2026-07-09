@@ -64,7 +64,7 @@ services:
     volumes:
       - ./:/home/app
       - /home/app/.venv
-    command: ["celery", "-A", "worker:celery_app", "worker", "--pool=solo", "--loglevel=info"]
+    command: ["celery", "-A", "worker:celery_app", "worker", "--beat", "--pool=solo", "--loglevel=info"]
 
 
   minio:
@@ -73,9 +73,11 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    env_file:
+      - .env
     environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: supersecretpassword
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
     volumes:
       - ./minio_data:/data

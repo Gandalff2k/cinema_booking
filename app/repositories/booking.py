@@ -3,15 +3,11 @@ from collections.abc import Sequence
 from sqlalchemy import and_, select
 from sqlalchemy.orm import contains_eager
 
-from app.models import Hall, Movie, Order, Promocode, Seat, Show, Ticket
+from app.models import Hall, Promocode, Seat, Show, Ticket
 from core.repository import BaseRepository
 
 
 class BookingRepository(BaseRepository[Seat]):
-    """
-    Booking repository for seat locking and booking-related reads.
-    """
-
     async def lock_seats_for_update(
         self, show_id: int, seat_ids: list[int]
     ) -> Sequence[Seat]:

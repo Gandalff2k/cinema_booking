@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistics · CinemaX Admin</title>
+    <link rel="stylesheet" href="/assets/css/global.css?v=4" />
+    <link rel="stylesheet" href="/pages/admin/style.css?v=4" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" style="cursor:pointer;" onclick="window.location.href='index.html'">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                <path d="M7 3v18M3 7.5h4M17 7.5h4M3 12h18M3 16.5h4M17 16.5h4M17 3v18"/>
+            </svg>
+            CinemaX · Statistics
+        </div>
+        <div class="nav-actions">
+            <button class="btn-secondary" onclick="window.location.href='index.html'">← Dashboard</button>
+            <button id="logout-btn" class="btn-secondary">Log out</button>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <h2 style="margin-bottom:20px;">Overview</h2>
+        <div class="admin-stats" id="admin-stats">
+            <div class="muted">Loading…</div>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js?v=4"></script>
+    <script src="/assets/js/auth.js?v=4"></script>
+    <script>
+        async function loadStats() {
+            if (!getAccessToken()) {
+                window.location.href = '../login/index.html';
+                return;
+            }
+            try {
+                const me = await apiFetch('/auth/me');
+                if (me.role !== 'admin') {
+                    showToast('Admins only', 'error');
+                    setTimeout(() => { window.location.href = '../home/index.html'; }, 1200);
+                    return;
+                }
+                const s = await apiFetch('/admin/stats');
+                const cards = [
+                    ['Movies', `${s.active_movies}/${s.movies}`],
+                    ['Users', s.users],
+                    ['Reviews', s.reviews],
+                    ['Avg rating', `★ ${s.avg_rating}`],
+                    ['Orders', s.orders],
+                    ['Paid', s.paid_orders],
+                    ['Pending', s.pending_orders],
+                    ['Refunded', s.refunded_orders],
+                    ['Revenue', `${s.revenue.toFixed(0)} UAH`],
+                ];
+                document.getElementById('admin-stats').innerHTML = cards.map(([label, value]) => `
+                    <div class="stat-card">
+                        <div class="stat-value">${escapeHtml(value)}</div>
+                        <div class="stat-label">${label}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('admin-stats').innerHTML =
+                    `<div class="muted">Failed to load statistics: ${escapeHtml(error.message)}</div>`;
+            }
+        }
+        loadStats();
+    </script>
+</body>
+</html>

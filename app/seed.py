@@ -1,34 +1,35 @@
 import asyncio
 import random
 import uuid
+from datetime import datetime, timedelta
 from decimal import Decimal
-from datetime import datetime, timedelta, date
+
 from faker import Faker
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from core.config import config as app_config
 from app.models.domain import (
-    User,
-    Movie,
-    Genre,
     Cinema,
+    FormatEnum,
+    Genre,
     Hall,
-    Seat,
-    Show,
+    Movie,
     Review,
     RoleEnum,
+    Seat,
     SeatTypeEnum,
-    FormatEnum,
-    ShowStatusEnum,
+    Show,
+    User,
 )
+from core.config import config as app_config
+from core.security.password import get_password_hash
 
 fake = Faker(["uk_UA"])
 
 
 async def clear_database(session):
-    print(" Очищення старої бази даних...")
-    # CASCADE видалить всі зв'язані дані, а RESTART IDENTITY скине ID (1, 2, 3...)
+    print("Database cleanup: truncating all tables...")
+
     await session.execute(
         text("""
         TRUNCATE users, movies, genres, cinemas, halls, seats, shows, 
@@ -36,7 +37,7 @@ async def clear_database(session):
     """)
     )
     await session.commit()
-    print(" База кристально чиста!\n")
+    print("Database is clean!\n")
 
 
 async def seed_data():
@@ -44,51 +45,42 @@ async def seed_data():
     async_session = async_sessionmaker(engine, expire_on_commit=False)
 
     async with async_session() as session:
-        # 1. ПОВНЕ ОЧИЩЕННЯ
         await clear_database(session)
 
-        print(
-            "docker compose exec minio mc alias set myminio http://localhost:9000 admin supersecretpasswordПочаток генерації нової мережі кінотеатрів..."
-        )
-
-        # 2. ЖАНРИ
         genres = [
-            "Фантастика",
-            "Бойовик",
-            "Драма",
-            "Комедія",
-            "Мультфільм",
-            "Триллер",
-            "Жахи",
-            "Серіал",
+            "Fantasy",
+            "Action",
+            "Drama",
+            "Comedy",
+            "Animation",
+            "Thriller",
+            "Horror",
+            "Series",
         ]
         genres_objs = [Genre(name=name) for name in genres]
         session.add_all(genres_objs)
         await session.flush()
 
-        # 3. КІНОТЕАТРИ ТА ЗАЛИ (2 міста, 4 зали)
         cinema_lviv = Cinema(
-            name="CinemaX Forum", city="Львів", address="вул. Під Дубом, 7B"
+            name="CinemaX Forum", city="Lviv", address="str. Chornovola, 2"
         )
         cinema_kyiv = Cinema(
-            name="CinemaX Gulliver", city="Київ", address="Спортивна площа, 1A"
+            name="CinemaX Gulliver", city="Kyiv", address="str. Sport Plaza, 1"
         )
         session.add_all([cinema_lviv, cinema_kyiv])
         await session.flush()
 
         halls = [
-            Hall(cinema_id=cinema_lviv.id, name="Зал 1 (IMAX)", capacity=30),
-            Hall(cinema_id=cinema_lviv.id, name="Зал 2 (VIP)", capacity=18),
-            Hall(cinema_id=cinema_kyiv.id, name="Головний Зал", capacity=30),
-            Hall(cinema_id=cinema_kyiv.id, name="Зал Інді", capacity=24),
+            Hall(cinema_id=cinema_lviv.id, name="Hall 1 (IMAX)", capacity=30),
+            Hall(cinema_id=cinema_lviv.id, name="Hall 2 (VIP)", capacity=18),
+            Hall(cinema_id=cinema_kyiv.id, name="Main Hall", capacity=30),
+            Hall(cinema_id=cinema_kyiv.id, name="Indie Hall", capacity=24),
         ]
         session.add_all(halls)
         await session.flush()
 
-        # 4. ГЕНЕРАЦІЯ МІСЦЬ ДЛЯ ВСІХ ЗАЛІВ
         def create_seats_for_hall(hall_id, rows, seats_per_row, has_vip=True):
             for r in range(1, rows + 1):
-                # Останній ряд робимо VIP диванчиками
                 is_vip = has_vip and (r == rows)
                 s_count = seats_per_row - 2 if is_vip else seats_per_row
 
@@ -107,32 +99,31 @@ async def seed_data():
                         )
                     )
 
-        create_seats_for_hall(halls[0].id, 4, 8)  # Львів IMAX
+        create_seats_for_hall(halls[0].id, 4, 8)  # Lviv IMAX
         create_seats_for_hall(
             halls[1].id, 3, 6, has_vip=True
-        )  # Львів VIP (усі дивани будуть в кінці)
-        create_seats_for_hall(halls[2].id, 4, 8)  # Київ Головний
-        create_seats_for_hall(halls[3].id, 3, 8, has_vip=False)  # Київ Інді (без VIP)
+        )  # Lviv VIP (all sofas will be at the end)
+        create_seats_for_hall(halls[2].id, 4, 8)  # Kyiv Main
+        create_seats_for_hall(halls[3].id, 3, 8, has_vip=False)  # Kyiv Indie (no VIP)
         await session.flush()
 
-        # 5. ФІЛЬМИ (Твої 10 постерів з правильними розширеннями)
         movie_data = [
-            ("Аурум", "aurum.jpg", 110, "16+", 6),
-            ("Закулісся", "backrooms.jpg", 105, "18+", 6),
-            ("Дедпул та Росомаха", "deadpool.webp", 127, "18+", 1),
-            ("Диявол носить Prada 2", "devilwearsprada2.jpg", 115, "12+", 3),
-            ("Дюна: Частина друга", "dune2.webp", 166, "12+", 0),
-            ("Мандалорець та Грогу", "mandalorian.jpg", 140, "12+", 0),
+            ("Aurum", "aurum.jpg", 110, "16+", 6),
+            ("The Backrooms", "backrooms.jpg", 105, "18+", 6),
+            ("Deadpool and Wolverine", "deadpool.webp", 127, "18+", 1),
+            ("The Devil Wears Prada 2", "devilwearsprada2.jpg", 115, "12+", 3),
+            ("Dune: Part Two", "dune2.webp", 166, "12+", 0),
+            ("The Mandalorian and Grogu", "mandalorian.jpg", 140, "12+", 0),
             (
-                "Оппенгеймер",
+                "Oppenheimer",
                 "oppenheirmer.webp",
                 180,
                 "16+",
                 2,
-            ),  # Зберіг твою опечатку у файлі
-            ("Тиск", "pressure.jpg", 95, "16+", 5),
-            ("Хлопаки: Сезон 4", "theboys.jpg", 130, "18+", 7),
-            ("Дуже страшне кіно 6", "veryscaryfilm.jpg", 90, "18+", 3),
+            ),
+            ("Pressure", "pressure.jpg", 95, "16+", 5),
+            ("The Boys: Season 4", "theboys.jpg", 130, "18+", 7),
+            ("Very Scary Movie 6", "veryscaryfilm.jpg", 90, "18+", 3),
         ]
 
         movie_objs = []
@@ -140,7 +131,7 @@ async def seed_data():
             movie = Movie(
                 title=title,
                 description=fake.paragraph(nb_sentences=3),
-                poster_url=f"/media/movies/{filename}",  # Прямий шлях для Nginx!
+                poster_url=f"/media/movies/{filename}",  #
                 duration_minutes=dur,
                 age_rating=rating,
                 release_date=fake.date_between(start_date="-1y", end_date="today"),
@@ -148,19 +139,60 @@ async def seed_data():
             movie.genres.append(genres_objs[genre_idx])
             session.add(movie)
             movie_objs.append(movie)
+
+        extra_movies = [
+            ("Night Flight", "nichniy_polit.jpg"),
+            ("The Last Ridge", "ostanniy_rubizh.jpg"),
+            ("Shadows of the City", "tini_mista.webp"),
+            ("Stellar Dust", "zoryaniy_pyl.jpg"),
+            ("Icy Heart", "kryzhane_sertse.jpg"),
+            ("Flame of Vengeance", "polumya_pomsty.webp"),
+            ("The Code of Silence", "kod_movchannya.jpg"),
+            ("The Lost Hour", "vtracheniy_chas.jpg"),
+            ("The Steel Storm", "staleviy_shtorm.jpg"),
+            ("The Game of Fate", "gra_doli.jpg"),
+            ("The Border of Reality", "mezha_realnosti.jpg"),
+            ("The Awakening", "probudzhennya.jpg"),
+            ("The Dark Forest", "temniy_lis.jpg"),
+            ("The Golden Cage", "zolota_klitka.jpg"),
+            ("The Exit 8", "vyhid_8.jpg"),
+            ("The Resonance", "rezonans.jpg"),
+            ("The Territory of X", "terytoriya_x.jpg"),
+            ("The Escape from Shawshank", "vtecha_z_shoushenka.webp"),
+            ("Men in Black 2", "lydi_v_chornomy_2.jpg"),
+            (
+                "Men in Black: Days of the Past",
+                "lydi_iks_dni_munylogo_maybytnogo.jpg",
+            ),
+        ]
+        age_ratings = ["12+", "16+", "18+"]
+        for title, filename in extra_movies:
+            movie = Movie(
+                title=title,
+                description=fake.paragraph(nb_sentences=3),
+                poster_url=f"/media/movies/{filename}",
+                duration_minutes=random.randint(85, 175),
+                age_rating=random.choice(age_ratings),
+                release_date=fake.date_between(start_date="-1y", end_date="today"),
+            )
+            movie.genres.append(random.choice(genres_objs))
+            session.add(movie)
+            movie_objs.append(movie)
         await session.flush()
 
-        # 6. ГЕНЕРАЦІЯ СЕАНСІВ (Крутимо кіно 3 дні підряд у всіх залах)
-        print("Створюємо розклад сеансів...")
+        print("seed shows")
         shows_objs = []
         base_date = datetime.now().replace(hour=10, minute=0, second=0, microsecond=0)
 
-        for day in range(3):  # Сьогодні, завтра, післязавтра
+        schedule_pool = random.sample(movie_objs, len(movie_objs))
+        pool_idx = 0
+
+        for day in range(3):
             for hall in halls:
                 current_time = base_date + timedelta(days=day)
-                # У кожному залі показуємо 4 рандомні фільми на день
-                for _ in range(4):
-                    movie = random.choice(movie_objs)
+                for _ in range(8):
+                    movie = schedule_pool[pool_idx % len(schedule_pool)]
+                    pool_idx += 1
                     is_imax = "IMAX" in hall.name
                     show = Show(
                         movie_id=movie.id,
@@ -175,37 +207,45 @@ async def seed_data():
                     )
                     session.add(show)
                     shows_objs.append(show)
-                    # Наступний сеанс через тривалість фільму + 30 хв на прибирання
                     current_time += timedelta(minutes=movie.duration_minutes + 30)
         await session.flush()
 
-        # 7. МАСОВІ КОРИСТУВАЧІ ТА ВІДГУКИ
-        print("Реєструємо 2000 користувачів та пишемо відгуки...")
+        print("seed users and reviews")
         for i in range(2000):
             user = User(
                 uuid=uuid.uuid4(),
-                email=f"user{i}_{fake.unique.email()}",  # гарантована унікальність
+                email=f"user{i}_{fake.unique.email()}",
                 phone_number=f"+380{random.randint(100000000, 999999999)}",
                 password="hashed_password",
                 username=f"user{i}_{fake.unique.user_name()}",
             )
             session.add(user)
-            await session.flush()  # Треба ID юзера для відгуку
+            await session.flush()
 
-            # 30% юзерів залишають відгук
             if random.random() < 0.3:
                 review = Review(
                     user_id=user.id,
                     movie_id=random.choice(movie_objs).id,
-                    rating=random.randint(
-                        5, 10
-                    ),  # Українці добрі, ставлять високі оцінки
+                    rating=random.randint(5, 10),
                     comment=fake.text(max_nb_chars=150),
                 )
                 session.add(review)
 
+        print(f"Creating admin user: {app_config.ADMIN_EMAIL}")
+        admin = User(
+            uuid=uuid.uuid4(),
+            email=app_config.ADMIN_EMAIL,
+            phone_number=f"+380{random.randint(100000000, 999999999)}",
+            password=get_password_hash(app_config.ADMIN_PASSWORD),
+            username=app_config.ADMIN_USERNAME,
+            role=RoleEnum.ADMIN,
+        )
+        session.add(admin)
+
         await session.commit()
-        print(" БАЗА ЗАРЯДЖЕНА! Можна тестувати API.")
+        print(
+            f" Admin user created: {app_config.ADMIN_EMAIL} / {app_config.ADMIN_PASSWORD}"
+        )
 
 
 if __name__ == "__main__":

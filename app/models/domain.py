@@ -1,20 +1,21 @@
-import uuid
 import enum
+import uuid
+
 from sqlalchemy import (
-    Column,
-    Integer,
     BigInteger,
-    String,
     Boolean,
-    ForeignKey,
-    Numeric,
-    DateTime,
+    Column,
     Date,
-    Text,
-    Table,
-    Index,
-    UniqueConstraint,
+    DateTime,
     Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Table,
+    Text,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -266,7 +267,7 @@ class Transaction(Base):
     order_id = Column(
         BigInteger, ForeignKey("orders.id", ondelete="CASCADE"), nullable=False
     )
-    liqpay_order_id = Column(String(255), unique=True, nullable=True)
+    provider_payment_id = Column(String(255), unique=True, nullable=True)
     amount = Column(Numeric(10, 2), nullable=False)
 
     status = Column(

@@ -10,7 +10,7 @@ let currentMovieId = null;
 let currentShow = null;
 
 function formatDate(value) {
-    return new Intl.DateTimeFormat('uk-UA', {
+    return new Intl.DateTimeFormat('en-GB', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -18,7 +18,7 @@ function formatDate(value) {
 }
 
 function formatTime(value) {
-    return new Intl.DateTimeFormat('uk-UA', {
+    return new Intl.DateTimeFormat('en-GB', {
         hour: '2-digit',
         minute: '2-digit',
     }).format(new Date(value));
@@ -72,9 +72,9 @@ function updateSelectedCount() {
 async function loadShow(showId) {
     const shows = await apiFetch(`/movies/shows/${currentMovieId}`);
     if (!shows.length) {
-        movieTitle.innerText = 'Сеансів поки немає';
+        movieTitle.innerText = 'No showtimes yet';
         selectedDate.innerText = '';
-        container.innerHTML = '<div style="text-align:center; color: var(--text-muted); padding: 24px;">Для цього фільму ще немає доступних сеансів</div>';
+        container.innerHTML = '<div style="text-align:center; color: var(--text-muted); padding: 24px;">No showtimes available for this movie yet</div>';
         count.innerText = '0';
         total.innerText = '0';
         bookBtn.disabled = true;
@@ -85,7 +85,7 @@ async function loadShow(showId) {
 
     timeSelect.innerHTML = shows.map((show) => `
         <option value="${show.id}" ${String(show.id) === String(currentShow.id) ? 'selected' : ''}>
-            ${formatTime(show.start_time)} - ${show.format} (${show.base_price} грн)
+            ${formatTime(show.start_time)} - ${show.format} (${show.base_price} UAH)
         </option>
     `).join('');
 
@@ -116,47 +116,49 @@ container.addEventListener('click', (event) => {
 });
 document.getElementById('book-btn').addEventListener('click', async (e) => {
     const btn = e.target;
-    
-const selectedSeatIds = [...document.querySelectorAll('.seats-wrapper .seat.selected')].map(s => Number(s.dataset.seatId));    
-    // Блокуємо кнопку
-    btn.innerText = 'Бронювання...';
+
+    if (!isTokenValid()) {
+        const go = await showConfirm(
+            'You need an account to buy tickets. Create one now — it only takes a moment.',
+            { confirmText: 'Sign up', cancelText: 'Later' },
+        );
+        if (go) {
+            window.location.href = '../login/index.html?tab=register';
+        }
+        return;
+    }
+
+    const selectedSeatIds = [...document.querySelectorAll('.seats-wrapper .seat.selected')]
+        .map((s) => Number(s.dataset.seatId));
+
+    if (!selectedSeatIds.length) {
+        showToast('Select at least one seat', 'error');
+        return;
+    }
+
+    btn.innerText = 'Booking...';
     btn.disabled = true;
 
     try {
-        const token = localStorage.getItem('access_token');
-        
-        const response = await fetch('/v1/booking/orders', { 
+        // One order for all selected seats -> a single Stripe payment.
+        const data = await apiFetch('/booking/orders', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
+            body: {
+                show_id: Number(currentShow.id),
+                seat_ids: selectedSeatIds,
             },
-            body: JSON.stringify({
-                show_id: Number(currentShow.id), // <-- ВИПРАВЛЕНО (Беремо ID з поточного об'єкта)
-                seat_ids: selectedSeatIds        // <-- ВИПРАВЛЕНО (Передаємо зібраний масив)
-            })
         });
 
-        const data = await response.json();
-
-       if (!response.ok) {
-    const errorMessage = Array.isArray(data.detail) ? data.detail[0].msg : (data.detail || 'Помилка при бронюванні');
-    throw new Error(errorMessage);
-}
-
-        // Редирект на Stripe
         if (data.checkout_url || data.url) {
-            window.location.href = data.checkout_url || data.url; 
+            showToast('Redirecting to payment...', 'success');
+            window.location.href = data.checkout_url || data.url;
         } else {
-            throw new Error('Бекенд не повернув посилання на оплату');
+            throw new Error('No payment link returned');
         }
-
     } catch (error) {
-        console.error("Помилка бронювання:", error);
-        alert(error.message); 
-        
-        // Розблоковуємо кнопку
-        btn.innerText = 'Перейти до оплати';
+        console.error('Booking error:', error);
+        showToast(error.message, 'error');
+        btn.innerText = 'Proceed to payment';
         btn.disabled = false;
     }
 });
@@ -166,7 +168,7 @@ async function initBookingPage() {
     const showId = params.get('show_id');
 
     if (!currentMovieId) {
-        movieTitle.innerText = 'Не вибрано фільм';
+        movieTitle.innerText = 'No movie selected';
         return;
     }
 

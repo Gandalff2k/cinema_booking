@@ -1,5 +1,4 @@
 from contextvars import ContextVar, Token
-from typing import Union
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -44,19 +43,19 @@ engines = {
 
 class RoutingSession(Session):
     def get_bind(self, mapper=None, clause=None, **kwargs):
-        # 1. Якщо це запис (INSERT, UPDATE, DELETE) або йде flush -> у writer
+        # 1. Writes (INSERT, UPDATE, DELETE) or an active flush -> writer
         if self._flushing or isinstance(clause, (Update, Delete, Insert)):
             return engines["writer"].sync_engine
 
-        # 2. ДОДАЄМО ЦЕЙ БЛОК:
-        # Якщо це SELECT, але він має приписку FOR UPDATE -> теж у writer!
+        # 2. Added block:
+        # A SELECT ... FOR UPDATE also needs the writer!
         if (
             isinstance(clause, Select)
             and getattr(clause, "_for_update_arg", None) is not None
         ):
             return engines["writer"].sync_engine
 
-        # 3. Всі інші звичайні SELECT -> у reader
+        # 3. All other plain SELECTs -> reader
         return engines["reader"].sync_engine
 
 
@@ -66,19 +65,13 @@ async_session_factory = sessionmaker(
     expire_on_commit=False,
 )
 
-session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
+session: AsyncSession | async_scoped_session = async_scoped_session(
     session_factory=async_session_factory,
     scopefunc=get_session_context,
 )
 
 
 async def get_session():
-    """
-    Get the database session.
-    This can be used for dependency injection.
-
-    :return: The database session.
-    """
     try:
         yield session
     finally:

@@ -1,13 +1,14 @@
+from datetime import datetime
 from decimal import Decimal
-from pydantic import BaseModel
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from app.models import Order, OrderStatusEnum, Seat, Show, Ticket, User, Movie, Hall
+from app.integrations.stripe_pay import create_checkout_session
+from app.models import Order, OrderStatusEnum, Seat, Show, Ticket, User
 from app.repositories import BookingRepository
 from app.schemas.requests.booking import CreateOrderRequest
 from app.schemas.responses.cinema import SeatResponse
@@ -16,10 +17,7 @@ from core.database import Propagation, Transactional, session
 from core.exceptions import BadRequestException, NotFoundException
 from core.factory import Factory
 from core.fastapi.dependencies.current_user import get_current_user
-
-
-from app.integrations.stripe_pay import create_checkout_session
-from datetime import datetime
+from core.fastapi.dependencies.rate_limiter import RateLimiter
 
 
 class TicketDetailResponse(BaseModel):
@@ -63,26 +61,28 @@ async def get_show_seats(
     ]
 
 
-@booking_router.post("/orders", response_model=OrderResponse, status_code=201)
+@booking_router.post(
+    "/orders",
+    response_model=OrderResponse,
+    status_code=201,
+    dependencies=[Depends(RateLimiter())],
+)
 @Transactional(propagation=Propagation.REQUIRED)
 async def create_order(
     payload: CreateOrderRequest,
     current_user: User = Depends(get_current_user),
     booking_repository: BookingRepository = Depends(Factory().get_booking_repository),
 ) -> OrderResponse:
-    print(f" [DEBUG] ЗАПИТ ДОЛЕТІВ! Користувач: {current_user.id}")
     if len(payload.seat_ids) != len(set(payload.seat_ids)):
         raise BadRequestException("Duplicate seat ids are not allowed")
 
     show = await booking_repository.get_show_by_id(payload.show_id)
     if not show:
         raise NotFoundException("Show not found")
-    print(" [DEBUG] Спроба заблокувати місця в БД...")
     locked_seats = await booking_repository.lock_seats_for_update(
         show_id=payload.show_id,
         seat_ids=payload.seat_ids,
     )
-    print(" [DEBUG] Місця успішно заблоковано!")
     if len(locked_seats) != len(payload.seat_ids):
         raise BadRequestException("One or more seats are unavailable")
 
@@ -133,11 +133,9 @@ async def create_order(
 
     session.add_all(ticket_objects)
     await session.flush()
-    print(" [DEBUG] Відправляємо запит на Stripe...")
     checkout_url = await create_checkout_session(
-        order=order, movie_title=f"Сеанс #{show.id}"
+        order=order, movie_title=f"Show #{show.id}"
     )
-    print(" [DEBUG] Відправляємо запит на Stripe...")
     return OrderResponse(
         id=order.id,
         user_id=order.user_id,

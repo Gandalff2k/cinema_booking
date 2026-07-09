@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Про фільм | Cinema Booking</title>
-    <link rel="stylesheet" href="/assets/css/global.css" />
-    <link rel="stylesheet" href="/pages/movie/style.css">
-<script src="/pages/movie/script.js" defer></script>
+    <title>Movie | CinemaX</title>
+    <link rel="stylesheet" href="/assets/css/global.css?v=3" />
+    <link rel="stylesheet" href="/pages/movie/style.css?v=3">
+<script src="/pages/movie/script.js?v=3" defer></script>
 </head>
 <body>
     <header class="navbar glass-panel">
-        <div class="logo" style="cursor:pointer;" onclick="window.location.href='../home/index.html'">🍿 CinemaX</div>
+        <div class="logo" style="cursor:pointer;" onclick="window.location.href='../home/index.html'"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M3 7.5h4M17 7.5h4M3 12h18M3 16.5h4M17 16.5h4M17 3v18"/></svg> CinemaX</div>
         <div class="nav-actions">
-            <button id="auth-btn" class="btn-primary" onclick="window.location.href='../login/index.html'">Увійти</button>
+            <button id="auth-btn" class="btn-primary" onclick="window.location.href='../login/index.html'">Sign in</button>
         </div>
     </header>
 
     <main class="container">
         <div class="movie-hero glass-panel">
-            <img id="movie-poster" src="" alt="Постер" class="hero-poster">
+            <img id="movie-poster" src="" alt="Poster" class="hero-poster">
             
             <div class="hero-info">
-                <h1 id="movie-title">Завантаження...</h1>
+                <h1 id="movie-title">Loading...</h1>
                 <p id="movie-tags" class="tags"></p>
                 <p id="movie-description" class="description"></p>
                 
@@ -30,14 +30,39 @@
         </div>
 
         <div class="dates-section">
-            <h2>Оберіть сеанс:</h2>
+            <h2>Choose a showtime:</h2>
             <div class="dates-flex" id="shows-list">
             </div>
         </div>
+
+        <div class="reviews-section glass-panel">
+            <div class="reviews-header">
+                <h2>Reviews</h2>
+                <div class="rating-summary" id="rating-summary"></div>
+            </div>
+
+            <form id="review-form" class="review-form" hidden>
+                <div class="review-form-row">
+                    <label for="review-rating">Rating:</label>
+                    <select id="review-rating"></select>
+                </div>
+                <textarea id="review-comment" maxlength="2000"
+                    placeholder="Your review..."></textarea>
+                <div class="review-form-actions">
+                    <span id="review-error" class="review-error"></span>
+                    <button type="submit" class="btn-primary">Submit review</button>
+                </div>
+            </form>
+            <p id="review-login-hint" class="review-login-hint" hidden>
+                <a href="../login/index.html">Sign in</a> to leave a review.
+            </p>
+
+            <div id="reviews-list" class="reviews-list"></div>
+        </div>
     </main>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/api.js?v=3"></script>
+    <script src="/assets/js/auth.js?v=3"></script>
     
 </body>
 </html>
