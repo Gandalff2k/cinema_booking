@@ -68,6 +68,16 @@ jobs:
             echo "target_ref=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           fi
 
+     
+      - name: Debug secret length (safe — no content printed)
+        env:
+          KEY: ${{ secrets.VM_SSH_KEY }}
+        run: |
+          echo "VM_SSH_KEY length: ${#KEY} characters"
+          echo "VM_SSH_KEY line count: $(printf '%s' "$KEY" | wc -l)"
+          echo "First line starts with '-----BEGIN': $(printf '%s' "$KEY" | head -n1 | grep -c '\-\-\-\-\-BEGIN')"
+          echo "Last line starts with '-----END': $(printf '%s' "$KEY" | tail -n1 | grep -c '\-\-\-\-\-END')"
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
