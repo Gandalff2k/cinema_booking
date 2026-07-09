@@ -33,14 +33,12 @@ class Settings(BaseSettings):
     RATE_LIMIT_TIMES: int = 20
     RATE_LIMIT_WINDOW_SECONDS: int = 60
 
-
     STALE_ORDER_MINUTES: int = 40
 
     STRIPE_SECRET_KEY: str | None = None
     STRIPE_WEBHOOK_SECRET: str | None = None
     FRONTEND_URL: str = "http://localhost:8000"
 
-    
     CORS_ORIGINS: str = "*"
 
     EMAILS_ENABLED: bool = False
@@ -51,10 +49,10 @@ class Settings(BaseSettings):
     SMTP_TLS: bool = True
     SMTP_FROM: str = "CinemaX <no-reply@cinemax.local>"
 
-    MINIO_ENDPOINT: str = "minio:9000" 
-    MINIO_BUCKET: str = "movies" 
+    MINIO_ENDPOINT: str = "minio:9000"
+    MINIO_BUCKET: str = "movies"
     MINIO_SECURE: bool = False
-    
+
     MINIO_ROOT_USER: str
     MINIO_ROOT_PASSWORD: str
 

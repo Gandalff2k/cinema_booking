@@ -1,7 +1,6 @@
 from core.config import config
 
 
-
 async def test_login_is_rate_limited_per_ip(client, monkeypatch):
 
     monkeypatch.setattr(config, "RATE_LIMIT_ENABLED", True)

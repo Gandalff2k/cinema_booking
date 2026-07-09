@@ -30,11 +30,11 @@ The Stripe webhook can be delivered more than once for the same event — Stripe
 
 ### Cache is fail-open, seats are not
 
-Redis backs the read-through cache on the movie catalog and the rate limiter — both fine to lose. Seat holds are the opposite: locking a seat takes a real `SELECT ... FOR UPDATE` in Postgres inside the booking transaction, because a race there means double-selling a seat, and that's not something a cache can be allowed near. A Celery beat job separately releases seats held by orders that went `PENDING` and were never paid within `STALE_ORDER_MINUTES`.
+Redis backs the read-through cache on the movie catalog and the rate limiter — both fine to lose. Seat holds are the opposite: locking a seat takes a real `SELECT ... FOR UPDATE` in Postgres inside the booking transaction, because a race there means double-selling a seat. A Celery beat job separately releases seats held by orders that went `PENDING` and were never paid within `STALE_ORDER_MINUTES`.
 
 ### Object storage stays behind the app, not in front of it
 
-Admins upload posters through the app's own `/admin/movies/{id}/poster` endpoint, which validates the file and pushes it into MinIO — nobody needs direct MinIO access for day-to-day work. In production MinIO has no port published to the internet at all; only Nginx and the API can reach it, over the internal Docker network. See [Object storage in production](#object-storage-in-production) for how the bucket is still readable publicly (posters) without exposing the admin API.
+Admins upload posters through the app's own `/admin/movies/{id}/poster` endpoint, which validates the file and pushes it into MinIO — nobody needs direct MinIO access for day-to-day work. In production MinIO has no port published to the internet at all; only Nginx and the API can reach it, over the internal Docker network. 
 
 ## Running locally
 
@@ -87,7 +87,6 @@ MinIO's ports are not published to the host in `docker-compose.prod.yml` — onl
   - For anything else (bulk import, browsing the bucket), tunnel the console over SSH rather than opening a port: `ssh -L 9001:localhost:9001 user@vm-host`, then open `http://localhost:9001` locally and log in with `MINIO_ROOT_USER`/`MINIO_ROOT_PASSWORD`.
   - Or skip the console entirely: `docker compose -f docker-compose.prod.yml exec minio sh` and use the `mc` client already inside the image.
 
-Rotate `MINIO_ROOT_PASSWORD` before any non-local deployment — the value in `.env.example` is a placeholder, not a default to ship with.
 
 ## Tests
 
