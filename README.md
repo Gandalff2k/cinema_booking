@@ -63,19 +63,6 @@ poetry run pytest
 
 **CD** (`.github/workflows/deploy.yml`) runs on push to `main`: re-runs the tests, then SSHes into the VM and runs `docker compose -f docker-compose.prod.yml up -d --build`. TLS certs live on the VM host (issued by certbot) and are bind-mounted read-only into Nginx — `nginx.prod.conf` only ever references a path, never a certificate.
 
-### First-time VM setup
-
-1. Point the domain's DNS at the VM.
-2. Clone the repo, copy `.env.example` to `.env` and fill in production values (`ENVIRONMENT=production`, `DEBUG=0`, a real `SECRET_KEY`, live Stripe keys, `FRONTEND_URL=https://your-domain`, a strong `MINIO_ROOT_PASSWORD`, matching `POSTGRES_PASSWORD` in both `.env` and the URL inside `DATABASE_URL`).
-3. Replace every `YOUR_DOMAIN` placeholder in `nginx.prod.conf` with the real domain.
-4. Issue the first certificate. Nginx needs to be serving port 80 for the HTTP-01 challenge, so bring the stack up once before certs exist — the port-80 server block works without them:
-   ```
-   docker compose -f docker-compose.prod.yml up -d nginx
-   sudo certbot certonly --webroot -w ./certbot-webroot -d YOUR_DOMAIN
-   docker compose -f docker-compose.prod.yml up -d --build
-   ```
-5. Add a renewal cron/systemd timer on the host: `certbot renew --quiet --deploy-hook "docker compose -f /path/to/docker-compose.prod.yml exec nginx nginx -s reload"`.
-6. Seed the database once: `docker compose -f docker-compose.prod.yml exec api python -m app.seed` (or apply your own initial data instead of the demo seed).
 
 ### Object storage in production
 
