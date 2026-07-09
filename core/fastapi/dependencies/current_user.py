@@ -2,13 +2,13 @@ from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.exc import NoResultFound
 
 from app.controllers.user import UserController
 from app.models.domain import RoleEnum, User
 from core.exceptions import CustomException, NotFoundException
 from core.factory import Factory
 from core.security.jwt import decode_token
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
@@ -32,7 +32,7 @@ async def get_current_user(
 
         user_uuid = UUID(str(payload.get("sub")))
         return await user_controller.get_by_uuid(user_uuid)
-    except (CustomException, TypeError, ValueError, NotFoundException):
+    except (CustomException, TypeError, ValueError, NotFoundException, NoResultFound):
         raise _unauthorized() from None
 
 

@@ -1,7 +1,7 @@
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict
 
 from app.models.domain import RoleEnum
 
@@ -10,7 +10,7 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     uuid: UUID
-    email: EmailStr
+    email: str
     username: str
     role: RoleEnum
 
