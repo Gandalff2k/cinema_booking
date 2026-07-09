@@ -28,18 +28,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from app.models.domain import (
     Base,
-    User,
-    Genre,
-    Movie,
-    Cinema,
-    Hall,
-    Seat,
-    Show,
-    Promocode,
-    Order,
-    Transaction,
-    Ticket,
-    Review,
 )
 
 # For auto generate schemas
