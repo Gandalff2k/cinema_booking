@@ -1,49 +1,57 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Вхід | Cinema Booking</title>
-    <link rel="stylesheet" href="/assets/css/global.css" />
-    <link rel="stylesheet" href="/pages/login/style.css">
-<script src="/pages/login/script.js" defer></script>
+    <title>Sign in | CinemaX</title>
+    <link rel="stylesheet" href="/assets/css/global.css?v=3" />
+    <link rel="stylesheet" href="/pages/login/style.css?v=3">
+<script src="/pages/login/script.js?v=3" defer></script>
 </head>
 <body class="auth-page">
+    <header class="navbar">
+        <div class="logo" style="cursor:pointer;"
+             onclick="window.location.href='../home/index.html'"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M3 7.5h4M17 7.5h4M3 12h18M3 16.5h4M17 16.5h4M17 3v18"/></svg> CinemaX</div>
+        <div class="nav-actions">
+            <button class="btn-primary"
+                    onclick="window.location.href='../home/index.html'">Home</button>
+        </div>
+    </header>
     <div class="glass-panel auth-container">
         
         <div class="auth-tabs">
-            <button class="tab-btn active" data-target="login-form">Вхід</button>
-            <button class="tab-btn" data-target="register-form">Реєстрація</button>
+            <button class="tab-btn active" data-target="login-form">Sign in</button>
+            <button class="tab-btn" data-target="register-form">Sign up</button>
         </div>
 
     <form id="login-form" class="auth-form active">
             <div class="header-text">
-                <h2>З поверненням!</h2>
-                <p>Увійдіть, щоб забронювати квитки</p>
+                <h2>Welcome back!</h2>
+                <p>Sign in to book tickets</p>
             </div>
             
             <div class="input-group">
-                <label>Email або Телефон</label>
-                <input type="text" id="login-contact" required placeholder="name@example.com або +380...">
+                <label>Email</label>
+                <input type="text" id="login-contact" required placeholder="name@example.com">
             </div>
             <div class="input-group">
-                <label>Пароль</label>
+                <label>Password</label>
                 <input type="password" id="login-password" required placeholder="••••••••">
             </div>
             
             <p id="login-error" class="error-msg"></p>
-            <button type="submit" class="btn-primary">Увійти</button>
+            <button type="submit" class="btn-primary">Sign in</button>
         </form>
 
         
         <form id="register-form" class="auth-form">
             <div class="header-text">
-                <h2>Створити акаунт</h2>
-                <p>Приєднуйтесь до нашого кінотеатру</p>
+                <h2>Create account</h2>
+                <p>Join our cinema</p>
             </div>
             
             <div class="input-group">
-                <label>Нікнейм</label>
+                <label>Username</label>
                 <input type="text" id="reg-username" required placeholder="cinemafan">
             </div>
          <div class="input-group">
@@ -51,22 +59,22 @@
     <input type="email" id="reg-contact" required placeholder="name@example.com">
 </div>
 <div class="input-group">
-    <label>Пароль</label>
-    <input type="password" id="reg-password" required placeholder="Мінімум 8 символів">
+    <label>Password</label>
+    <input type="password" id="reg-password" required placeholder="At least 8 characters">
 </div>
 <div class="input-group">
-    <label>Повторіть пароль</label>
-    <input type="password" id="reg-password-confirm" required placeholder="Повторіть пароль">
+    <label>Repeat password</label>
+    <input type="password" id="reg-password-confirm" required placeholder="Repeat password">
 </div>
 
             <p id="reg-error" class="error-msg"></p>
-            <button type="submit" class="btn-primary">Зареєструватися</button>
+            <button type="submit" class="btn-primary">Sign up</button>
         </form>
 
     </div>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/api.js?v=3"></script>
+    <script src="/assets/js/auth.js?v=3"></script>
   
 </body>
 </html>

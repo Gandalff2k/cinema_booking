@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Вибір місць | Cinema Booking</title>
-    <link rel="stylesheet" href="/assets/css/global.css" />
-    <link rel="stylesheet" href="/pages/booking/style.css">
+    <title>Seat selection | CinemaX</title>
+    <link rel="stylesheet" href="/assets/css/global.css?v=3" />
+    <link rel="stylesheet" href="/pages/booking/style.css?v=3">
     
-<script src="/pages/booking/script.js" defer></script>
+<script src="/pages/booking/script.js?v=3" defer></script>
 </head>
 <body>
 <header class="navbar">
-    <div class="logo" style="cursor:pointer;" onclick="window.location.href='../home/index.html'">🍿 CinemaX</div>
+    <div class="logo" style="cursor:pointer;" onclick="window.location.href='../home/index.html'"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M3 7.5h4M17 7.5h4M3 12h18M3 16.5h4M17 16.5h4M17 3v18"/></svg> CinemaX</div>
     <div class="nav-actions">
-        <button id="auth-btn" class="btn-primary" onclick="window.location.href='../login/index.html'">Увійти</button>
+        <button id="auth-btn" class="btn-primary" onclick="window.location.href='../login/index.html'">Sign in</button>
     </div>
 </header>
 
@@ -21,27 +21,27 @@
         
         <aside class="sidebar">
             <div class="movie-info">
-                <h1 id="movie-title">Завантаження...</h1>
+                <h1 id="movie-title">Loading...</h1>
                 <p class="selected-date" id="selected-date"></p>
             </div>
 
             <div class="time-selector">
-                <label>Оберіть час сеансу:</label>
+                <label>Choose a showtime:</label>
                 <select id="session-time">
                 </select>
             </div>
 
             <ul class="showcase">
-                <li><div class="seat"></div><small>Вільно</small></li>
-                <li><div class="seat vip"></div><small>VIP (+100 грн)</small></li>
-                <li><div class="seat selected"></div><small>Обрано</small></li>
-                <li><div class="seat occupied"></div><small>Зайнято</small></li>
+                <li><div class="seat"></div><small>Available</small></li>
+                <li><div class="seat vip"></div><small>VIP</small></li>
+                <li><div class="seat selected"></div><small>Selected</small></li>
+                <li><div class="seat occupied"></div><small>Taken</small></li>
             </ul>
 
             <div class="checkout-panel">
-                <p class="text">Обрано квитків: <span id="count">0</span></p>
-                <p class="text">До сплати: <span id="total" class="highlight">0</span> грн</p>
-<button id="book-btn" class="book-btn" disabled>Перейти до оплати</button>
+                <p class="text">Tickets selected: <span id="count">0</span></p>
+                <p class="text">Total: <span id="total" class="highlight">0</span> UAH</p>
+<button id="book-btn" class="book-btn" disabled>Proceed to payment</button>
                 
                 <div id="liqpay-container" style="display: none; margin-top: 15px;"></div>
             </div>
@@ -50,7 +50,7 @@
         <main class="cinema-hall">
             <div class="screen-container">
                 <div class="screen-glow"></div>
-                <div class="screen">ЕКРАН</div>
+                <div class="screen">SCREEN</div>
             </div>
             
             <div class="seats-wrapper" id="seats-container"></div>
@@ -58,8 +58,8 @@
 
     </div>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/api.js?v=3"></script>
+    <script src="/assets/js/auth.js?v=3"></script>
 
 </body>
 </html>
