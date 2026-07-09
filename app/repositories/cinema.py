@@ -3,15 +3,11 @@ from collections.abc import Sequence
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload, selectinload
 
-from app.models import Cinema, Hall, Movie, Show
+from app.models import Hall, Movie, Show
 from core.repository import BaseRepository
 
 
 class CinemaRepository(BaseRepository[Movie]):
-    """
-    Cinema repository provides movie and show read operations.
-    """
-
     async def get_active_movies(self) -> Sequence[Movie]:
         query = (
             select(Movie)
@@ -21,6 +17,15 @@ class CinemaRepository(BaseRepository[Movie]):
         )
         result = await self.session.scalars(query)
         return result.all()
+
+    async def get_movie_by_id(self, movie_id: int) -> Movie | None:
+        query = (
+            select(Movie)
+            .options(selectinload(Movie.genres))
+            .where(Movie.id == movie_id, Movie.is_active.is_(True))
+        )
+        result = await self.session.scalars(query)
+        return result.one_or_none()
 
     async def get_shows_by_movie(self, movie_id: int) -> Sequence[Show]:
         query = (

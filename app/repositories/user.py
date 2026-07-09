@@ -5,16 +5,9 @@ from core.repository import BaseRepository
 
 
 class UserRepository(BaseRepository[User]):
-    """
-    User repository provides all the database operations for the User model.
-    """
-
     async def get_by_username(
         self, username: str, join_: set[str] | None = None
     ) -> User | None:
-        """
-        Get user by username.
-        """
         query = self._query(join_)
         query = query.filter(User.username == username)
 
@@ -23,9 +16,6 @@ class UserRepository(BaseRepository[User]):
     async def get_by_email(
         self, email: str, join_: set[str] | None = None
     ) -> User | None:
-        """
-        Get user by email.
-        """
         query = self._query(join_)
         query = query.filter(User.email == email)
 
