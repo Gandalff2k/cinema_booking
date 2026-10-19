@@ -1,6 +1,6 @@
 # CinemaX
 
-A backend for a cinema chain: customers browse movies, pick seats on a live seat map, pay through Stripe, and get their tickets by email with a QR code attached. Managers run everything — movies, reviews, refunds — from a dedicated admin dashboard.
+**Was deployed to AWS but no longer is so link has been removed ** A backend for a cinema chain: customers browse movies, pick seats on a live seat map, pay through Stripe, and get their tickets by email with a QR code attached. Managers run everything - movies, reviews, refunds - from a dedicated admin dashboard.
 
 The frontend is plain server-served HTML/CSS/JS (no build step, no framework) talking to a JSON API. Nginx serves the static pages and proxies both the API and the object storage behind one domain.
 
